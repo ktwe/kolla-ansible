@@ -1,6 +1,8 @@
-RABBITMQ_NODENAME=rabbit@{{ ansible_hostname }}
+RABBITMQ_NODENAME=rabbit@{{ lookup('dig', hostvars[inventory_hostname]['ansible_facts'][api_interface].ipv4.address + '/PTR') }}
 RABBITMQ_BOOT_MODULE=rabbit_clusterer
 RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS="-pa /usr/lib/rabbitmq/lib/{{ rabbitmq_version }}"
+
+RABBITMQ_USE_LONGNAME=true
 
 RABBITMQ_LOG_BASE=/var/log/kolla/{{ project_name }}
 
