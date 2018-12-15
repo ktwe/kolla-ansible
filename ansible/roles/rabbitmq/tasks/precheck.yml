@@ -50,16 +50,10 @@
     - container_facts['rabbitmq'] is not defined
     - inventory_hostname in groups['rabbitmq']
 
-- name: Check if all rabbit hostnames are resolvable
-  command: "getent ahostsv4 {{ hostvars[item]['ansible_hostname'] }}"
-  changed_when: false
-  register: rabbitmq_hostnames
-  with_items: "{{ groups['rabbitmq'] }}"
-
-- fail: msg="Hostname has to resolve to IP address of api_interface"
-  with_items: "{{ rabbitmq_hostnames.results }}"
+- fail: msg="API interface is missing a reverse DNS entry, which is required for RabbitMQ"
   when:
-    - "item.stdout.find(hostvars[item['item']]['ansible_' ~ hostvars[item['item']]['api_interface']]['ipv4']['address']) == -1"
+    - "lookup('dig', hostvars[item]['ansible_facts'][api_interface].ipv4.address + '/PTR') == 'NXDOMAIN'"
+  with_items: "{{ groups['rabbitmq'] }}"
 
 - name: Checking free port for outward RabbitMQ
   wait_for:
