@@ -1,5 +1,5 @@
 Main:
-  hostname: {{ ansible_fqdn }}
+  hostname: {{ ansible_hostname }}
   check_freq: {{ monasca_agent_check_frequency }}
   forwarder_url: http://127.0.0.1:{{ monasca_agent_forwarder_port }}
 
