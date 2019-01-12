@@ -45,6 +45,7 @@ instances:
   search_string:
   - cinder-volume
 {% endif -%}
+{% endif -%}
 {% if enable_glance | bool -%}
 {% if inventory_hostname in groups['glance-api'] -%}
 - built_by: Glance
