@@ -1,0 +1,62 @@
+init_config: null
+instances:
+{% if enable_cinder | bool and inventory_hostname in groups['cinder-api'] -%}
+- built_by: Cinder
+  dimensions:
+    service: block-storage
+  match_pattern: .*version=1.*
+  name: block-storage-api
+  timeout: 10
+  url: http://{{ api_interface_address }}:{{ cinder_api_port }}/v2
+  use_keystone: true
+{% endif -%}
+{% if enable_glance | bool and inventory_hostname in groups['glance-api'] -%}
+- built_by: Glance
+  dimensions:
+    service: image-service
+  match_pattern: .*v2.0.*
+  name: image-service-api
+  timeout: 10
+  url: http://{{ api_interface_address }}:{{ glance_api_port }}
+  use_keystone: true
+{% endif -%}
+{% if enable_heat | bool and inventory_hostname in groups['heat-api'] -%}
+- built_by: Heat
+  dimensions:
+    service: orchestration
+  match_pattern: .*versions.*
+  name: orchestration-api
+  timeout: 10
+  url: http://{{ api_interface_address }}:{{ heat_api_port }}
+  use_keystone: true
+{% endif -%}
+{% if enable_keystone | bool and inventory_hostname in groups['keystone'] -%}
+- built_by: Keystone
+  dimensions:
+    service: identity-service
+  match_pattern: .*v3\..*
+  name: orchestration-api
+  timeout: 10
+  url: http://{{ api_interface_address }}:{{ keystone_admin_port }}
+  use_keystone: true
+{% endif -%}
+{% if enable_nova | bool and inventory_hostname in groups['nova-api'] -%}
+- built_by: Nova
+  dimensions:
+    service: compute
+  match_pattern: .*version=2.*
+  name: compute-api
+  timeout: 10
+  url: http://{{ api_interface_address }}:{{ nova_api_port }}/v2.0
+  use_keystone: true
+{% endif -%}
+{% if enable_neutron | bool and inventory_hostname in groups['neutron-server'] -%}
+- built_by: Neutron
+  dimensions:
+    service: networking
+  match_pattern: .*v2.0.*
+  name: networking-api
+  timeout: 10
+  url: http://{{ api_interface_address }}:{{ neutron_server_port }}
+  use_keystone: true
+{% endif -%}

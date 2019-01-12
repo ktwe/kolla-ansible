@@ -71,19 +71,7 @@
   run_once: True
   register: agent_plugins
 
-- name: Find monasca-agent-collector plugin configuration files for host groups
-  local_action:
-    module: find
-    paths:
-      - "{{ role_path }}/templates/monasca-agent-collector/group_plugins/{{ item }}/"
-      - "{{ node_custom_config }}/monasca/{{ item }}_agent_plugins/"
-    patterns: '*.yaml'
-  run_once: True
-  with_items:
-    - "{{ ansible_facts['inventory_group_names'] }}"
-  register: agent_group_plugins
-
-- name: Copying over monasca-agent-collector plugins
+- name: Copying over monasca-agent-collector system plugins
   vars:
     service: "{{ monasca_services['monasca-agent-collector'] }}"
   template:
@@ -94,7 +82,28 @@
   register: monasca_agent_collector_plugin_confs
   with_items:
     - "{{ agent_plugins.files }}"
-    - "{{ agent_group_plugins.results | map(attribute='files') | flatten }}"
+  when:
+    - inventory_hostname in groups[service['group']]
+    - service.enabled | bool
+  notify:
+    - Restart monasca-agent-collector container
+
+- name: Copying over monasca-agent-collector service plugin
+  vars:
+    service: "{{ monasca_services['monasca-agent-collector'] }}"
+    plugin_regex: "monasca-agent-collector-plugin-(?P<plugin>[\\w]+)"
+    plugin_groups: "{{ group_names | map('regex_search', plugin_regex) | select | list }}"
+    plugins: "{{ plugin_groups | map('regex_replace', plugin_regex, '\\g<plugin>') | list }}"
+  merge_yaml:
+    sources:
+      - "{{ role_path }}/templates/monasca-agent-collector/service_plugins/{{ item }}.yaml.j2"
+      - "{{ node_custom_config }}/monasca/service_plugins/{{ item }}.yaml"
+      - "{{ node_custom_config }}/monasca/{{ inventory_hostname }}/service_plugins/{{ item }}.yaml"
+    dest: "{{ node_config_directory }}/monasca-agent-collector/plugins/{{ item }}.yaml"
+    mode: "0660"
+  become: true
+  with_items:
+    - "{{ plugins }}"
   when:
     - inventory_hostname in groups[service['group']]
     - service.enabled | bool

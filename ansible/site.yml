@@ -8,11 +8,6 @@
   hosts: all
   gather_facts: false
   tasks:
-    - name: Save original groups in inventory_group_names
-      set_fact:
-        inventory_group_names: "{{ group_names }}"
-        cacheable: true
-
     - name: Group hosts based on OpenStack release
       group_by:
         key: "openstack_release_{{ openstack_release }}"
