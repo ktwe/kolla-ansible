@@ -542,6 +542,15 @@
         tags: monasca,
         when: enable_monasca | bool }
 
+- name: Apply role monasca-standalone-agent
+  gather_facts: false
+  hosts: monasca-agent
+  serial: '{{ kolla_serial|default("0") }}'
+  roles:
+    - { role: monasca-standalone-agent,
+        tags: monasca-standalone-agent,
+        when: enable_monasca_standalone_agent | bool }
+
 - name: Apply role aodh
   gather_facts: false
   hosts:

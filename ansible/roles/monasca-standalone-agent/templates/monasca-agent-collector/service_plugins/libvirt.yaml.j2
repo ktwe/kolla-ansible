@@ -1,0 +1,31 @@
+init_config:
+    auth_url: {{ keystone_admin_url }}
+    endpoint_type: internalURL
+    username: {{ nova_keystone_user }}
+    user_domain_id: {{ default_project_domain_id }}
+    project_name: service
+    project_domain_id: {{ default_user_domain_id }}
+    password: {{ nova_keystone_password }}
+    region_name: 'eu-de1'
+    libvirt_uri: qemu+tcp://{{ migration_interface_address }}/system
+    cache_dir: /dev/shm
+    nova_refresh: 14400
+    vm_probation: 300
+    ping_check: False
+    alive_only: False
+    metadata:
+    - scale_group
+    - vm_name
+    - tenant_name
+    customer_metadata:
+    - scale_group
+    - vm_name
+    vm_cpu_check_enable: True
+    vm_disks_check_enable: True
+    vm_network_check_enable: True
+    vm_ping_check_enable: True
+    vm_extended_disks_check_enable: False
+    disk_collection_period: 0
+    vnic_collection_period: 0
+instances:
+    - {}

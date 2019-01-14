@@ -1,0 +1,70 @@
+---
+project_name: "monasca-standalone-agent"
+
+monasca_services:
+  monasca-agent-collector:
+    container_name: monasca_agent_collector
+    group: monasca-agent-collector
+    enabled: true
+    image: "{{ monasca_agent_image_full }}"
+    pid_mode: "host"
+    volumes:
+      - "{{ node_config_directory }}/monasca-agent-collector/:{{ container_config_directory }}/:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "kolla_logs:/var/log/kolla"
+      - "/sys:/sys:ro"
+      - "/dev/disk/:/dev/disk:ro"
+    dimensions: "{{ monasca_agent_dimensions }}"
+  monasca-agent-statsd:
+    container_name: monasca_agent_statsd
+    group: monasca-agent-statsd
+    enabled: true
+    image: "{{ monasca_agent_image_full }}"
+    volumes:
+      - "{{ node_config_directory }}/monasca-agent-statsd/:{{ container_config_directory }}/:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "kolla_logs:/var/log/kolla"
+    dimensions: "{{ monasca_agent_dimensions }}"
+  monasca-agent-forwarder:
+    container_name: monasca_agent_forwarder
+    group: monasca-agent-forwarder
+    enabled: true
+    image: "{{ monasca_agent_image_full }}"
+    volumes:
+      - "{{ node_config_directory }}/monasca-agent-forwarder/:{{ container_config_directory }}/:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "kolla_logs:/var/log/kolla"
+    dimensions: "{{ monasca_agent_dimensions }}"
+
+####################
+# Monasca
+####################
+
+# Agent settings
+monasca_agent_max_buffer_size: 1000
+monasca_agent_backlog_send_rate: 1000
+monasca_agent_max_batch_size: 1000
+monasca_agent_check_frequency: 30
+
+####################
+# Docker
+####################
+monasca_install_type: "{{ kolla_install_type }}"
+monasca_tag: "{{ openstack_release }}"
+
+monasca_agent_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/{{ kolla_base_distro }}-{{ monasca_install_type }}-monasca-agent"
+monasca_agent_tag: "{{ monasca_tag }}"
+monasca_agent_image_full: "{{ monasca_agent_image }}:{{ monasca_agent_tag }}"
+
+monasca_agent_dimensions: "{{ default_container_dimensions }}"
+
+####################
+# OpenStack
+####################
+monasca_openstack_auth: "{{ openstack_auth }}"
+
+monasca_api_admin_endpoint: "{{ admin_protocol }}://{{ kolla_internal_fqdn }}:{{ monasca_api_port }}/v2.0"
+monasca_api_internal_endpoint: "{{ internal_protocol }}://{{ kolla_internal_fqdn }}:{{ monasca_api_port }}/v2.0"
+monasca_api_public_endpoint: "{{ public_protocol }}://{{ kolla_external_fqdn }}:{{ monasca_api_port }}/v2.0"
+
+monasca_logging_debug: "{{ openstack_logging_debug }}"

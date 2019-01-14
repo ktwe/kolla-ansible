@@ -1,0 +1,166 @@
+init_config: null
+instances:
+{% if enable_cinder | bool -%}
+{% if inventory_hostname in groups['cinder-api'] -%}
+- built_by: Cinder
+  detailed: true
+  dimensions:
+    component: cinder-api
+    service: block-storage
+  exact_match: false
+  name: cinder-api
+  search_string:
+  - cinder-api
+{% endif -%}
+{% if inventory_hostname in groups['cinder-backup'] -%}
+- built_by: Cinder
+  detailed: true
+  dimensions:
+    component: cinder-backup
+    service: block-storage
+  exact_match: false
+  name: cinder-backup
+  search_string:
+  - cinder-backup
+{% endif -%}
+{% if inventory_hostname in groups['cinder-scheduler'] -%}
+- built_by: Cinder
+  detailed: true
+  dimensions:
+    component: cinder-scheduler
+    service: block-storage
+  exact_match: false
+  name: cinder-scheduler
+  search_string:
+  - cinder-scheduler
+{% endif -%}
+{% if inventory_hostname in groups['cinder-volume'] -%}
+- built_by: Cinder
+  detailed: true
+  dimensions:
+    component: cinder-volume
+    service: block-storage
+  exact_match: false
+  name: cinder-volume
+  search_string:
+  - cinder-volume
+{% endif -%}
+{% endif -%}
+{% if enable_glance | bool -%}
+{% if inventory_hostname in groups['glance-api'] -%}
+- built_by: Glance
+  detailed: true
+  dimensions:
+    component: glance-api
+    service: image-service
+  exact_match: false
+  name: glance-api
+  search_string:
+  - glance-api
+{% endif -%}
+{% endif -%}
+{% if enable_heat | bool -%}
+{% if inventory_hostname in groups['heat-api'] -%}
+- built_by: Heat
+  detailed: true
+  dimensions:
+    component: heat-api
+    service: orchestration
+  exact_match: false
+  name: heat-api
+  search_string:
+  - heat-api$
+{% endif -%}
+{% if inventory_hostname in groups['heat-api-cfn'] -%}
+- built_by: Heat
+  detailed: true
+  dimensions:
+    component: heat-api-cfn
+    service: orchestration
+  exact_match: false
+  name: heat-api-cfn
+  search_string:
+  - heat-api-cfn
+{% endif -%}
+{% if inventory_hostname in groups['heat-engine'] -%}
+- built_by: Heat
+  detailed: true
+  dimensions:
+    component: heat-engine
+    service: orchestration
+  exact_match: false
+  name: heat-engine
+  search_string:
+  - heat-engine
+{% endif -%}
+{% endif -%}
+{% if enable_neutron | bool -%}
+{% if inventory_hostname in groups['neutron-server'] -%}
+- built_by: Neutron
+  detailed: true
+  dimensions:
+    component: neutron-server
+    service: networking
+  exact_match: false
+  name: neutron-server
+  search_string:
+  - neutron-server
+{% endif -%}
+{% endif -%}
+{% if enable_nova | bool -%}
+{% if inventory_hostname in groups['nova-api'] -%}
+- built_by: Nova
+  detailed: true
+  dimensions:
+    component: nova-api
+    service: compute
+  exact_match: false
+  name: nova-api
+  search_string:
+  - nova-api
+{% endif -%}
+{% if inventory_hostname in groups['nova-conductor'] -%}
+- built_by: Nova
+  detailed: true
+  dimensions:
+    component: nova-conductor
+    service: compute
+  exact_match: false
+  name: nova-conductor
+  search_string:
+  - nova-conductor
+{% endif -%}
+{% if inventory_hostname in groups['nova-consoleauth'] -%}
+- built_by: Nova
+  detailed: true
+  dimensions:
+    component: nova-consoleauth
+    service: compute
+  exact_match: false
+  name: nova-consoleauth
+  search_string:
+  - nova-consoleauth
+{% endif -%}
+{% if inventory_hostname in groups['nova-novncproxy'] -%}
+- built_by: Nova
+  detailed: true
+  dimensions:
+    component: nova-novncproxy
+    service: compute
+  exact_match: false
+  name: nova-novncproxy
+  search_string:
+  - nova-novncproxy
+{% endif -%}
+{% if inventory_hostname in groups['nova-scheduler'] -%}
+- built_by: Nova
+  detailed: true
+  dimensions:
+    component: nova-scheduler
+    service: compute
+  exact_match: false
+  name: nova-scheduler
+  search_string:
+  - nova-scheduler
+{% endif -%}
+{% endif -%}
