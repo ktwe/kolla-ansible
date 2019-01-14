@@ -1,7 +1,4 @@
 ---
-- include_tasks: register.yml
-  when: inventory_hostname in groups['monasca-agent']
-
 - include_tasks: config.yml
   when: inventory_hostname in groups['monasca-agent']
 
