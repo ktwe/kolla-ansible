@@ -73,6 +73,7 @@
     image: "{{ item.value.image }}"
     volumes: "{{ item.value.volumes }}"
     dimensions: "{{ item.value.dimensions }}"
+    stop_timeout: 60
   register: check_mariadb_containers
   when:
     - kolla_action != "config"

@@ -19,6 +19,7 @@
     name: "bootstrap_mariadb"
     restart_policy: "never"
     volumes: "{{ service.volumes }}"
+    stop_timeout: 60
   notify:
     - Starting first MariaDB container
 

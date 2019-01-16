@@ -17,6 +17,7 @@
     restart_policy: "never"
     volumes: "{{ service.volumes }}"
     dimensions: "{{ service.dimensions }}"
+    stop_timeout: 60
   when:
     - bootstrap_host is defined
     - bootstrap_host == inventory_hostname
@@ -56,6 +57,7 @@
     image: "{{ service.image }}"
     volumes: "{{ service.volumes }}"
     dimensions: "{{ service.dimensions }}"
+    stop_timeout: 60
   when:
     - kolla_action != "config"
     - inventory_hostname != master_host
@@ -99,6 +101,7 @@
     image: "{{ service.image }}"
     volumes: "{{ service.volumes }}"
     dimensions: "{{ service.dimensions }}"
+    stop_timeout: 60
   when:
     - kolla_action != "config"
     - inventory_hostname == master_host

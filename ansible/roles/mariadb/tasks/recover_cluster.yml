@@ -35,6 +35,7 @@
         name: "{{ mariadb_service.container_name }}"
         restart_policy: "never"
         volumes: "{{ mariadb_service.volumes }}"
+        stop_timeout: 60
 
     - name: Stop MariaDB containers
       become: true
@@ -125,6 +126,7 @@
     name: "{{ mariadb_service.container_name }}"
     restart_policy: "never"
     volumes: "{{ mariadb_service.volumes }}"
+    stop_timeout: 60
   when:
     - bootstrap_host is defined
     - bootstrap_host == inventory_hostname
@@ -165,6 +167,7 @@
     name: "{{ mariadb_service.container_name }}"
     restart_policy: "never"
     volumes: "{{ mariadb_service.volumes }}"
+    stop_timeout: 60
   when:
     - bootstrap_host is defined
     - bootstrap_host != inventory_hostname
