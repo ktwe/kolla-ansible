@@ -86,6 +86,7 @@ class ModuleArgsTest(base.BaseTestCase):
             volumes_from=dict(required=False, type='list'),
             dimensions=dict(required=False, type='dict', default=dict()),
             tty=dict(required=False, type='bool', default=False),
+            stop_timeout=dict(required=False, type='int', default=None),
             )
         required_if = [
             ['action', 'pull_image', ['image']],
@@ -134,6 +135,7 @@ FAKE_DATA = {
         'name': 'test_container',
         'volumes': None,
         'tty': False,
+        'stop_timeout': None,
     },
 
     'images': [
@@ -891,3 +893,18 @@ class TestAttrComp(base.BaseTestCase):
         container_info = {'State': dict(Status='running')}
         self.dw = get_DockerWorker({'state': 'exited'})
         self.assertTrue(self.dw.compare_container_state(container_info))
+
+    def test_compare_stop_timeout_neg(self):
+        container_info = {'Config': dict(StopTimeout=10)}
+        self.dw = get_DockerWorker({'stop_timeout': 10})
+        self.assertFalse(self.dw.compare_stop_timeout(container_info))
+
+    def test_compare_stop_timeout_pos(self):
+        container_info = {'Config': dict(StopTimeout=10)}
+        self.dw = get_DockerWorker({'stop_timeout': 20})
+        self.assertTrue(self.dw.compare_stop_timeout(container_info))
+
+    def test_compare_stop_timeout_default(self):
+        container_info = {'Config': dict()}
+        self.dw = get_DockerWorker({})
+        self.assertFalse(self.dw.compare_stop_timeout(container_info))

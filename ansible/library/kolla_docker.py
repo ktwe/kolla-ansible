@@ -178,6 +178,12 @@ options:
     required: False
     default: False
     type: bool
+  stop_timeout:
+    description:
+      - Set timeout to gracefully stop the container
+    required: False
+    default: None
+    type: int
 author: Sam Yaple
 '''
 
@@ -310,8 +316,15 @@ class DockerWorker(object):
             self.compare_volumes_from(container_info) or
             self.compare_environment(container_info) or
             self.compare_container_state(container_info) or
-            self.compare_dimensions(container_info)
+            self.compare_dimensions(container_info) or
+            self.compare_stop_timeout(container_info)
         )
+
+    def compare_stop_timeout(self, container_info):
+        new_stop_timeout = self.params.get('stop_timeout')
+        current_stop_timeout = container_info['Config'].get('StopTimeout', None)
+
+        return new_stop_timeout != current_stop_timeout
 
     def compare_ipc_mode(self, container_info):
         new_ipc_mode = self.params.get('ipc_mode')
@@ -641,6 +654,7 @@ class DockerWorker(object):
             'name': self.params.get('name'),
             'volumes': volumes,
             'tty': self.params.get('tty'),
+            'stop_timeout': self.params.get('stop_timeout'),
         }
 
     def create_container(self):
@@ -826,6 +840,7 @@ def generate_module():
         volumes_from=dict(required=False, type='list'),
         dimensions=dict(required=False, type='dict', default=dict()),
         tty=dict(required=False, type='bool', default=False),
+        stop_timeout=dict(required=False, type='int', default=None),
     )
     required_if = [
         ['action', 'pull_image', ['image']],
