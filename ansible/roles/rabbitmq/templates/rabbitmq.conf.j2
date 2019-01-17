@@ -10,5 +10,5 @@ management.load_definitions = /etc/rabbitmq/definitions.json
 
 cluster_formation.peer_discovery_backend = rabbit_peer_discovery_classic_config
 {% for host in groups[role_rabbitmq_groups] %}
-cluster_formation.classic_config.nodes.{{ loop.index0 }} = rabbit@{{ lookup('dig', hostvars[host]['ansible_facts'][api_interface].ipv4.address + '/PTR') }}
+cluster_formation.classic_config.nodes.{{ loop.index0 }} = rabbit@{{ lookup('dig', hostvars[host]['ansible_facts'][api_interface].ipv4.address + '/PTR')[0:-1] }}
 {% endfor %}
