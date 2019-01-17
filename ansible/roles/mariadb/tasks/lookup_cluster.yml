@@ -19,11 +19,20 @@
     name: "mariadb"
   register: mariadb_volume
 
+- name: get container state
+  kolla_docker:
+    name: mariadb
+    action: "get_container_state"
+    failed_when: False
+  register: mariadb_container_state
+
 - name: Writing hostname of host with existing cluster files to temp file
+  vars:
+    container_state: "{{ mariadb_container_state['Status'] | default('missing') }}"
   local_action: copy content={{ ansible_hostname }} dest=/tmp/kolla_mariadb_cluster mode=0644
   changed_when: False
   check_mode: no
-  when: not mariadb_volume | changed
+  when: not container_state == 'missing'
 
 - name: Registering host from temp file
   set_fact:
