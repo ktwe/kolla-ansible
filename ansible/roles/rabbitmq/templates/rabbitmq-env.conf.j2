@@ -1,4 +1,4 @@
-RABBITMQ_NODENAME=rabbit@{{ lookup('dig', hostvars[inventory_hostname]['ansible_facts'][api_interface].ipv4.address + '/PTR') }}
+RABBITMQ_NODENAME=rabbit@{{ lookup('dig', hostvars[inventory_hostname]['ansible_facts'][api_interface].ipv4.address + '/PTR')[0:-1] }}
 RABBITMQ_BOOT_MODULE=rabbit_clusterer
 RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS="-pa /usr/lib/rabbitmq/lib/{{ rabbitmq_version }}"
 
