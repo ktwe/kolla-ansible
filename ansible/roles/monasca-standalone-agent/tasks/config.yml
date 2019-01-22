@@ -102,6 +102,7 @@
     dest: "{{ node_config_directory }}/monasca-agent-collector/plugins/{{ item }}.yaml"
     mode: "0660"
   become: true
+  register: monasca_agent_collector_service_plugin_confs
   with_items:
     - "{{ plugins }}"
   when:
