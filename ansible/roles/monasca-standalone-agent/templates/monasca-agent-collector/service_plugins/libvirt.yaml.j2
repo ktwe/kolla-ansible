@@ -7,7 +7,7 @@ init_config:
     project_domain_id: {{ default_user_domain_id }}
     password: {{ nova_keystone_password }}
     region_name: 'eu-de1'
-    libvirt_uri: qemu+tcp://{{ migration_interface_address }}/system
+    libvirt_uri: qemu+tcp://{{ api_interface_address }}/system
     cache_dir: /dev/shm
     nova_refresh: 14400
     vm_probation: 300
