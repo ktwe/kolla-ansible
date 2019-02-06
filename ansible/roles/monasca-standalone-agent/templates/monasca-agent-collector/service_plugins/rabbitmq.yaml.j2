@@ -1,6 +1,6 @@
 init_config: {}
 instances:
   - exchanges: [nova, cinder, glance, keystone, neutron, heat]
-    rabbitmq_api_url: {{ rabbitmq_proto }}://{{ api_interface_address }}:{{ rabbitmq_management_port }}/api
+    rabbitmq_api_url: http://{{ api_interface_address }}:{{ rabbitmq_management_port }}/api
     rabbitmq_user: {{ rabbitmq_user }}
     rabbitmq_pass: {{ rabbitmq_password }}
