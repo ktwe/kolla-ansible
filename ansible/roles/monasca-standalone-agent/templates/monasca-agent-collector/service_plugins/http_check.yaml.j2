@@ -1,10 +1,18 @@
-init_config: null
+init_config:
+  keystone_config:
+    keystone_url: {{ keystone_admin_url }}/v3/
+    project_name: {{ monasca_control_plane_project }}
+    project_domain_name: {{ default_project_domain_name }}
+    username: {{ monasca_agent_user }}
+    user_domain_name: Default
+    password: {{ monasca_agent_password }}
+
 instances:
 {% if enable_cinder | bool and inventory_hostname in groups['cinder-api'] -%}
 - built_by: Cinder
   dimensions:
     service: block-storage
-  match_pattern: .*version=1.*
+  match_pattern: .*v2.0*
   name: block-storage-api
   timeout: 10
   url: http://{{ api_interface_address }}:{{ cinder_api_port }}/v2

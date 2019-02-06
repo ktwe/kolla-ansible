@@ -1,0 +1,7 @@
+init_config:
+  timeout: 1
+  collect_period: 3600
+  ca_certs: /etc/ssl/certs/ca-certificates.crt
+instances:
+  - built_by: CertificateCheck
+    url: {{ public_protocol }}://{{ kolla_external_fqdn }}:443

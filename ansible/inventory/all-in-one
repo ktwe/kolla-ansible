@@ -459,6 +459,27 @@ monasca-agent
 [monasca-agent-statsd:children]
 monasca-agent
 
+[monasca-agent-collector-plugin-cert_check:children]
+control
+
+[monasca-agent-collector-plugin-elastic:children]
+control
+
+[monasca-agent-collector-plugin-http_check:children]
+control
+
+[monasca-agent-collector-plugin-libvirt:children]
+compute
+
+[monasca-agent-collector-plugin-mysql:children]
+control
+
+[monasca-agent-collector-plugin-process:children]
+control
+
+[monasca-agent-collector-plugin-rabbitmq:children]
+control
+
 [monasca-api:children]
 monasca
 
