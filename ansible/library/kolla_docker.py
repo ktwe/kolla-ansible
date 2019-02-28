@@ -71,6 +71,11 @@ options:
       - The username used to authenticate
     required: False
     type: str
+  command:
+    description:
+      - The command to execute in the container
+    required: False
+    type: str
   detach:
     description:
       - Detach from the container after it is created
@@ -215,6 +220,7 @@ EXAMPLES = '''
 
 import json
 import os
+import shlex
 import traceback
 
 import docker
@@ -230,6 +236,8 @@ class DockerWorker(object):
         self.module = module
         self.params = self.module.params
         self.changed = False
+        # Use this to store arguments to pass to exit_json().
+        self.result = {}
 
         # TLS not fully implemented
         # tls_config = self.generate_tls()
@@ -317,6 +325,7 @@ class DockerWorker(object):
             self.compare_environment(container_info) or
             self.compare_container_state(container_info) or
             self.compare_dimensions(container_info) or
+            self.compare_command(container_info) or
             self.compare_stop_timeout(container_info)
         )
 
@@ -490,6 +499,16 @@ class DockerWorker(object):
                 # '' or 0 - both falsey.
                 return True
 
+    def compare_command(self, container_info):
+        new_command = self.params.get('command')
+        if new_command is not None:
+            new_command_split = shlex.split(new_command)
+            new_path = new_command_split[0]
+            new_args = new_command_split[1:]
+            if (new_path != container_info['Path'] or
+                    new_args != container_info['Args']):
+                return True
+
     def parse_image(self):
         full_image = self.params.get('image')
 
@@ -646,6 +665,7 @@ class DockerWorker(object):
     def build_container_options(self):
         volumes, binds = self.generate_volumes()
         return {
+            'command': self.params.get('command'),
             'detach': self.params.get('detach'),
             'environment': self._format_env_vars(),
             'host_config': self.build_host_config(binds),
@@ -706,15 +726,22 @@ class DockerWorker(object):
             # dict all the time.
             if isinstance(rc, dict):
                 rc = rc['StatusCode']
-            if rc != 0:
-                self.module.fail_json(
-                    failed=True,
-                    changed=True,
-                    msg="Container exited with non-zero return code %s" % rc
-                )
+            # Include container's return code, standard output and error in the
+            # result.
+            self.result['rc'] = rc
+            self.result['stdout'] = self.dc.logs(self.params.get('name'),
+                                                 stdout=True, stderr=False)
+            self.result['stderr'] = self.dc.logs(self.params.get('name'),
+                                                 stdout=False, stderr=True)
             if self.params.get('remove_on_exit'):
                 self.stop_container()
                 self.remove_container()
+            if rc != 0:
+                self.module.fail_json(
+                    changed=True,
+                    msg="Container exited with non-zero return code %s" % rc,
+                    **self.result
+                )
 
     def get_container_env(self):
         name = self.params.get('name')
@@ -806,6 +833,7 @@ def generate_module():
         auth_password=dict(required=False, type='str', no_log=True),
         auth_registry=dict(required=False, type='str'),
         auth_username=dict(required=False, type='str'),
+        command=dict(required=False, type='str'),
         detach=dict(required=False, type='bool', default=True),
         labels=dict(required=False, type='dict', default=dict()),
         name=dict(required=False, type='str'),
@@ -894,10 +922,10 @@ def main():
         # types. If we ever add method that will have to return some
         # meaningful data, we need to refactor all methods to return dicts.
         result = bool(getattr(dw, module.params.get('action'))())
-        module.exit_json(changed=dw.changed, result=result)
+        module.exit_json(changed=dw.changed, result=result, **dw.result)
     except Exception:
-        module.exit_json(failed=True, changed=True,
-                         msg=repr(traceback.format_exc()))
+        module.fail_json(changed=True, msg=repr(traceback.format_exc()),
+                         **dw.result)
 
 # import module snippets
 from ansible.module_utils.basic import *  # noqa
