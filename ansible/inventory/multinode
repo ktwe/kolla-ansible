@@ -751,5 +751,8 @@ compute
 network
 storage
 
+[prometheus-ceph-mgr:children]
+ceph-mgr
+
 [prometheus-alertmanager:children]
 monitoring

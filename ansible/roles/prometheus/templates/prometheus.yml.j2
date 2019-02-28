@@ -63,7 +63,7 @@ scrape_configs:
     honor_labels: true
     static_configs:
       - targets:
-{% for host in groups["ceph-mgr"] %}
+{% for host in groups["prometheus-ceph-mgr"] %}
         - '{{ hostvars[host]['ansible_' + hostvars[host]['api_interface']]['ipv4']['address'] }}:{{ hostvars[host]['prometheus_ceph_mgr_exporter_port'] }}'
 {% endfor %}
 {% endif %}
