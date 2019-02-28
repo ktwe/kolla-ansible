@@ -13,6 +13,7 @@
   with_dict: "{{ prometheus_services }}"
 
 - name: Copying over config.json files
+  become: true
   template:
     src: "{{ item.key }}.json.j2"
     dest: "{{ node_config_directory }}/{{ item.key }}/config.json"
@@ -25,6 +26,7 @@
     - Restart {{ item.key }} container
 
 - name: Copying over prometheus config file
+  become: true
   vars:
     service: "{{ prometheus_services['prometheus-server']}}"
   template:
@@ -42,6 +44,7 @@
     - Restart prometheus-server container
 
 - name: Copying over prometheus alertmanager config file
+  become: true
   vars:
     service: "{{ prometheus_services['prometheus-alertmanager']}}"
   template:
@@ -59,6 +62,7 @@
     - Restart prometheus-alertmanager container
 
 - name: Copying over my.cnf for mysqld_exporter
+  become: true
   vars:
     service: "{{ prometheus_services['prometheus-mysqld-exporter']}}"
   merge_configs:
