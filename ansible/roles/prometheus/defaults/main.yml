@@ -23,8 +23,7 @@ prometheus_services:
       - "{{ node_config_directory }}/prometheus-node-exporter/:{{ container_config_directory }}/:ro"
       - "/etc/localtime:/etc/localtime:ro"
       - "kolla_logs:/var/log/kolla/"
-      - "/proc:/host/proc:ro"
-      - "/sys:/host/sys:ro"
+      - "/:/host:ro,rslave"
     dimensions: "{{ prometheus_node_exporter_dimensions }}"
   prometheus-mysqld-exporter:
     container_name: prometheus_mysqld_exporter
