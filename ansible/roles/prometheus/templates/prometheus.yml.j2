@@ -5,6 +5,11 @@ global:
   external_labels:
     monitor: 'kolla'
 
+{% if prometheus_alert_rules is defined and prometheus_alert_rules.files | length  > 0 %}
+rule_files:
+  - "/etc/prometheus/*.rules"
+{% endif %}
+
 scrape_configs:
   - job_name: prometheus
     static_configs:
