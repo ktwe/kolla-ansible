@@ -1299,6 +1299,25 @@ listen prometheus_server
 {% for host in groups['prometheus'] %}
   server {{ hostvars[host]['ansible_hostname'] }} {{ hostvars[host]['ansible_' + hostvars[host]['api_interface']]['ipv4']['address'] }}:{{ prometheus_port }} check inter 2000 rise 2 fall 5
 {% endfor %}
+
+{% if haproxy_enable_external_vip | bool %}
+userlist prometheus-user
+  user {{ prometheus_user }} insecure-password {{ prometheus_password }}
+
+listen prometheus_server_external
+  bind {{ kolla_external_vip_address }}:{{ prometheus_port }} {{ tls_bind_info }}
+  http-request del-header X-Forwarded-Proto
+  http-request set-header X-Forwarded-Proto https if { ssl_fc }
+  acl auth_acl http_auth(prometheus-server-user)
+  http-request auth realm basicauth unless auth_acl
+{% for http_option in haproxy_listen_http_extra %}
+  {{ http_option }}
+{% endfor %}
+{% for host in groups['prometheus'] %}
+  server {{ hostvars[host]['ansible_hostname'] }} {{ hostvars[host]['ansible_' + hostvars[host]['api_interface']]['ipv4']['address'] }}:{{ prometheus_port }} check inter 2000 rise 2 fall 5
+{% endfor %}
+{% endif %}
+
 {% endif %}
 
 # (NOTE): This defaults section deletes forwardfor as recommended by:
