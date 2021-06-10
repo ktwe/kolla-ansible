@@ -114,7 +114,7 @@
   ignore_errors: true
 
 - name: install python-pip
-  shell: "curl https://bootstrap.pypa.io/get-pip.py | python"
+  shell: "curl https://infranaut-pub.obs-website.eu-de.otc.t-systems.com/infranaut-cloud/kolla/get-pip.py | python"
   when: check_pip_installed is failed
   become: true
 
