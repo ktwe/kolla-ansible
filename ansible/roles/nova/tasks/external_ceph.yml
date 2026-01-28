@@ -27,6 +27,15 @@
     - cinder_backend_ceph | bool
     - external_ceph_cephx_enabled | bool
 
+- name: Check cinder-nvme keyring file
+  local_action: stat path="{{ node_custom_config }}/nova/ceph.client.cinder-nvme.keyring"
+  run_once: True
+  register: cinder_nvme_cephx_keyring_file
+  failed_when: not cinder_nvme_cephx_keyring_file.stat.exists
+  when:
+    - cinder_nvme_backend_ceph | bool
+    - external_ceph_cephx_enabled | bool
+
 # NOTE: nova-compute and nova-libvirt only need ceph.client.nova.keyring.
 - name: Copy over ceph nova keyring file
   copy:
@@ -77,6 +86,9 @@
     - uuid: "{{ cinder_rbd_secret_uuid }}"
       name: "client.cinder secret"
       enabled: "{{ cinder_backend_ceph }}"
+    - uuid: "{{ cinder_nvme_rbd_secret_uuid }}"
+      name: "client.cinder-nvme secret"
+      enabled: "{{ cinder_nvme_backend_ceph }}"
   notify:
     - Restart nova-libvirt container
 
@@ -96,6 +108,14 @@
     - cinder_backend_ceph | bool
     - external_ceph_cephx_enabled | bool
 
+- name: Extract cinder-nvme key from file
+  local_action: shell cat "{{ cinder_nvme_cephx_keyring_file.stat.path }}" | grep -E 'key\s*=' | awk '{ print $3 }'
+  run_once: True
+  register: cinder_nvme_cephx_raw_key
+  when:
+    - cinder_nvme_backend_ceph | bool
+    - external_ceph_cephx_enabled | bool
+
 - name: Pushing secrets key for libvirt
   copy:
     content: "{{ item.result.stdout }}"
@@ -113,6 +133,9 @@
     - uuid: "{{ cinder_rbd_secret_uuid }}"
       result: "{{ cinder_cephx_raw_key }}"
       enabled: "{{ cinder_backend_ceph }}"
+    - uuid: "{{ cinder_nvme_rbd_secret_uuid }}"
+      result: "{{ cinder_nvme_cephx_raw_key }}"
+      enabled: "{{ cinder_nvme_backend_ceph }}"
   notify:
     - Restart nova-libvirt container
 

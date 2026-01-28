@@ -68,6 +68,7 @@ def main():
     uuid_keys = ['ceph_cluster_fsid',
                  'rbd_secret_uuid',
                  'cinder_rbd_secret_uuid',
+                 'cinder_nvme_rbd_secret_uuid',
                  'gnocchi_project_id',
                  'gnocchi_resource_id',
                  'gnocchi_user_id',
