@@ -492,9 +492,9 @@ class DockerWorker(object):
             # NOTE(mgoddard): If a resource has been explicitly requested,
             # check for a match. Otherwise, ensure is is set to the default.
             if key1 in new_dimensions:
-                if new_dimensions[key1] != current_dimensions[key2]:
+                if new_dimensions[key1] != current_dimensions.get(key2, None):
                     return True
-            elif current_dimensions[key2]:
+            elif current_dimensions.get(key2, None):
                 # The default values of all currently supported resources are
                 # '' or 0 - both falsey.
                 return True
